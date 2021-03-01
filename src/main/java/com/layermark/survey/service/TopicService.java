@@ -31,8 +31,8 @@ public class TopicService {
         return topic;
     }
 
-    public ArrayList<Topic> findAll() {
-        return new ArrayList<>(topicRepository.findAll());
+    public ArrayList<Topic> findAllTopicsApproved() {
+        return new ArrayList<>(topicRepository.findByIsApprovedTrue());
     }
 
     public void save(Topic topic) {
@@ -45,7 +45,7 @@ public class TopicService {
     }
 
     public ArrayList<ResultResource> findResults() { // Finds results of all topics.
-        ArrayList<Topic> topics = findAll();
+        ArrayList<Topic> topics = findAllTopicsApproved();
         ArrayList<ResultResource> resultResources = new ArrayList<>();
 
         for (Topic topic : topics) { // Creating result resources by iteration over topics.
@@ -61,7 +61,7 @@ public class TopicService {
     }
 
     public ArrayList<Topic> findAvailableTopicsForAUser(User user) { // Finds all unanswered topics for a particular user.
-        ArrayList<Topic> allTopics = findAll();
+        ArrayList<Topic> allTopics = findAllTopicsApproved();
         ArrayList<Topic> answeredTopics = user.getAnswers()
                 .stream()
                 .map(Answer::getTopic).collect(Collectors.toCollection(ArrayList::new));
@@ -72,6 +72,10 @@ public class TopicService {
                 .filter(topic -> !answeredTopics.contains(topic)).collect(Collectors.toCollection(ArrayList::new));
 
         return topicsAvailable;
+    }
+
+    public ArrayList<Topic> findRequestedTopics() {
+        return new ArrayList<>(topicRepository.findByIsApprovedFalse());
     }
 
 

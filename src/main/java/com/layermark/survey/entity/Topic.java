@@ -1,6 +1,5 @@
 package com.layermark.survey.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +24,9 @@ public class Topic {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "is_approved")
+    private Boolean isApproved;
 
     @OneToMany(mappedBy = "topic")
     private List<Answer> answers;

@@ -40,6 +40,9 @@ public class AnswerService {
     public void submitAnswer(User user, int answerId) {
         Answer answer = findById(answerId);
 
+        if (!answer.getTopic().getIsApproved()) // Check if submitted answer's topic is approved or not.
+            throw new RuntimeException("This topic is not approved yet.");
+
         if (answer.getUsers().contains(user)) // Check if this answer is already submitted.
             throw new RuntimeException("User is already submitted this answer.");
 

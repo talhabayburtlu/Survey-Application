@@ -2,6 +2,7 @@ package com.layermark.survey.controller;
 
 import com.layermark.survey.entity.Topic;
 import com.layermark.survey.entity.User;
+import com.layermark.survey.lib.dto.ApprovalDTO;
 import com.layermark.survey.lib.dto.SubmissionDTO;
 import com.layermark.survey.lib.dto.TopicDTO;
 import com.layermark.survey.lib.resource.ResultResource;
@@ -41,6 +42,15 @@ public class TopicRestController {
     @PostMapping("/")
     public void createTopic(@RequestBody TopicDTO topicDTO) {
         Topic topic = topicMapper.toEntity(topicDTO);
+        topic.setIsApproved(false);
+
+        org.springframework.security.core.userdetails.User securityUser =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findByEmail(securityUser.getUsername());
+
+        if (user.getRole().equals("ADMIN"))
+            topic.setIsApproved(true);
+
         this.topicService.save(topic);
     }
 
@@ -70,6 +80,22 @@ public class TopicRestController {
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findByEmail(securityUser.getUsername());
         return topicService.findAvailableTopicsForAUser(user);
+    }
+
+    @GetMapping("/requests/")
+    public ArrayList<Topic> getRequestedTopicsFromUsers() {
+        return topicService.findRequestedTopics();
+    }
+
+    @PatchMapping("/requests/")
+    public void approveRequestedTopic(@RequestBody ApprovalDTO approvalDTO) {
+        Topic approvedTopic = topicService.findById(approvalDTO.getApprovedTopicId());
+
+        if (approvedTopic.getIsApproved())
+            throw new RuntimeException("This topic is already approved.");
+
+        approvedTopic.setIsApproved(true);
+        topicService.save(approvedTopic);
     }
 
 }
