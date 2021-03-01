@@ -33,6 +33,10 @@ public class AnswerService {
         answerRepository.saveAll(answers);
     }
 
+    public void deleteById(int id) {
+        answerRepository.deleteById(id);
+    }
+
     public void submitAnswer(User user, int answerId) {
         Answer answer = findById(answerId);
 

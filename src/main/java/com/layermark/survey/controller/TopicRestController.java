@@ -56,7 +56,7 @@ public class TopicRestController {
     }
 
     @PostMapping("/users/{userId}")
-    public void submitAnswer(@RequestBody SubmissionDTO submissionDTO, @PathVariable int userId) {
+    public void submitAnswerToTopic(@RequestBody SubmissionDTO submissionDTO, @PathVariable int userId) {
         User user = userService.findById(userId);
         answerService.submitAnswer(user, submissionDTO.getAnswerId());
     }
