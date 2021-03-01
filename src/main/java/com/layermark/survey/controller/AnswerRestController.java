@@ -2,7 +2,7 @@ package com.layermark.survey.controller;
 
 import com.layermark.survey.entity.Answer;
 import com.layermark.survey.lib.dto.AnswerDTO;
-import com.layermark.survey.lib.resource.AnswerResponse;
+import com.layermark.survey.lib.resource.AnswerResource;
 import com.layermark.survey.mapper.AnswerMapper;
 import com.layermark.survey.service.AnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,13 @@ public class AnswerRestController {
     }
 
     @GetMapping("/{answerId}")
-    public AnswerResponse getById(@PathVariable int answerId) {
+    public AnswerResource getById(@PathVariable int answerId) {
         Answer answer = answerService.findById(answerId);
         return answerMapper.toResponse(answer);
     }
 
     @PutMapping("/{answerId}")
-    public AnswerResponse updateAnswer(@PathVariable int answerId, @RequestBody AnswerDTO answerDTO) {
+    public AnswerResource updateAnswer(@PathVariable int answerId, @RequestBody AnswerDTO answerDTO) {
         Answer answer = answerService.findById(answerId);
         answer.setDescription(answerDTO.getDescription());
 

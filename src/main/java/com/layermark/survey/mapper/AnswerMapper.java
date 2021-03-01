@@ -4,7 +4,7 @@ import com.layermark.survey.dao.TopicRepository;
 import com.layermark.survey.entity.Answer;
 import com.layermark.survey.entity.Topic;
 import com.layermark.survey.lib.dto.AnswerDTO;
-import com.layermark.survey.lib.resource.AnswerResponse;
+import com.layermark.survey.lib.resource.AnswerResource;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,10 +26,10 @@ public class AnswerMapper {
         return answer;
     }
 
-    public AnswerResponse toResponse(Answer answer) {
-        AnswerResponse answerResponse = modelMapper.map(answer, AnswerResponse.class);
-        answerResponse.setTopicId(answer.getTopic().getId());
-        return answerResponse;
+    public AnswerResource toResponse(Answer answer) {
+        AnswerResource answerResource = modelMapper.map(answer, AnswerResource.class);
+        answerResource.setTopicId(answer.getTopic().getId());
+        return answerResource;
     }
 
 

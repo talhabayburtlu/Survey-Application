@@ -18,15 +18,21 @@ public class UserService {
     public User findById(int id) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null)
-            throw new RuntimeException("User with id: " + id + " could not find");
+            throw new RuntimeException("User with id: " + id + " could not find.");
+
+        return user;
+    }
+
+    public User findByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null)
+            throw new RuntimeException("User with email: " + email + " could not find.");
 
         return user;
     }
 
     public void save(User user) {
-        user.setId(0);
         userRepository.save(user);
     }
-
 
 }

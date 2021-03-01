@@ -10,6 +10,7 @@ import com.layermark.survey.service.AnswerService;
 import com.layermark.survey.service.TopicService;
 import com.layermark.survey.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -55,15 +56,19 @@ public class TopicRestController {
         this.topicService.deleteById(topicId);
     }
 
-    @PostMapping("/users/{userId}")
-    public void submitAnswerToTopic(@RequestBody SubmissionDTO submissionDTO, @PathVariable int userId) {
-        User user = userService.findById(userId);
+    @PostMapping("/users/")
+    public void submitAnswerToTopic(@RequestBody SubmissionDTO submissionDTO) {
+        org.springframework.security.core.userdetails.User securityUser =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findByEmail(securityUser.getUsername());
         answerService.submitAnswer(user, submissionDTO.getAnswerId());
     }
 
-    @GetMapping("/users/{userId}")
-    public ArrayList<Topic> getAvailableTopics(@PathVariable int userId) {
-        User user = userService.findById(userId);
+    @GetMapping("/users/")
+    public ArrayList<Topic> getAvailableTopics() {
+        org.springframework.security.core.userdetails.User securityUser =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findByEmail(securityUser.getUsername());
         return topicService.findAvailableTopicsForAUser(user);
     }
 

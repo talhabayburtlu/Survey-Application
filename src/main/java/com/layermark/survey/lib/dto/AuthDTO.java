@@ -1,4 +1,4 @@
-package com.layermark.survey.lib.resource;
+package com.layermark.survey.lib.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnswerResponse {
-    private int id;
-    private String description;
-    private int topicId;
+public class AuthDTO {
+    private String email;
+    private String password;
 }

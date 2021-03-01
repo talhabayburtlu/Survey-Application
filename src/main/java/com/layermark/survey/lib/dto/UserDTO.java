@@ -15,7 +15,8 @@ public class UserDTO {
     private String fullName;
     private String email;
     private String password;
-    private int age;
+    private String role;
     @JsonProperty("phone-number")
     private String phoneNumber;
+    private int age;
 }
