@@ -53,5 +53,7 @@ public class User {
     @JsonIgnore
     private List<Answer> answers;
 
+    @OneToOne(mappedBy = "user")
+    private Token forgetPasswordToken;
 
 }
