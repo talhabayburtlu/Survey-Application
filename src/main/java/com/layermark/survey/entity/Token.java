@@ -27,7 +27,7 @@ public class Token {
     @Column(name = "end_date")
     private Timestamp endDate;
 
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

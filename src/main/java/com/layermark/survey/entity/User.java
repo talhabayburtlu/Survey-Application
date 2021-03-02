@@ -56,4 +56,8 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Token forgetPasswordToken;
 
+    @OneToOne(mappedBy = "user")
+    private Token verifyToken;
+
+
 }
