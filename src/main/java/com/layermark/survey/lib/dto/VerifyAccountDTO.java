@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ForgetPasswordRequestDTO {
+public class VerifyAccountDTO {
+    private String token;
     private String email;
 }
