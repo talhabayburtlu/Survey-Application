@@ -34,12 +34,12 @@ public class TopicRestController {
         this.topicMapper = topicMapper;
     }
 
-    @GetMapping("/results")
-    public ArrayList<ResultResource> getResults() {
-        return topicService.findResults();
+    @GetMapping("/{topicId}") // Gets topic by it's id.
+    public Topic getById(@PathVariable int topicId) {
+        return topicService.findById(topicId);
     }
 
-    @PostMapping("/")
+    @PostMapping("/") // Creates/Requests topic
     public void createTopic(@RequestBody TopicDTO topicDTO) {
         Topic topic = topicMapper.toEntity(topicDTO);
         topic.setIsApproved(false);
@@ -48,53 +48,59 @@ public class TopicRestController {
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findByEmail(securityUser.getUsername());
 
-        if (user.getRole().equals("ADMIN"))
-            topic.setIsApproved(true);
+        if (user.getRole().equals("ADMIN")) // Checking if creator of this topic is Admin or not.
+            topic.setIsApproved(true); // Not approving if it is created by a user.
 
         this.topicService.save(topic);
     }
 
-    @PutMapping("/{topicId}")
+    @PutMapping("/{topicId}") // Updates a topic.
     public void updateTopic(@PathVariable int topicId, @RequestBody TopicDTO topicDTO) {
         Topic topic = topicMapper.toEntity(topicDTO);
+        topic.setIsApproved(true);
         topic.setId(topicId);
         this.topicService.save(topic);
     }
 
-    @DeleteMapping("/{topicId}")
+    @DeleteMapping("/{topicId}") // Deletes a topic.
     public void deleteTopic(@PathVariable int topicId) {
         this.topicService.deleteById(topicId);
     }
 
+    @GetMapping("/results") // Gets results of approved topics.
+    public ArrayList<ResultResource> getResults() {
+        return topicService.findResults();
+    }
+
     @PostMapping("/users/")
-    public void submitAnswerToTopic(@RequestBody SubmissionDTO submissionDTO) {
-        org.springframework.security.core.userdetails.User securityUser =
+    public void submitAnswerToTopic(@RequestBody SubmissionDTO submissionDTO) { // Submits answer to a topic.
+        org.springframework.security.core.userdetails.User securityUser = // Getting authenticated user details.
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.findByEmail(securityUser.getUsername());
+        User user = userService.findByEmail(securityUser.getUsername()); // Getting user by using user details.
         answerService.submitAnswer(user, submissionDTO.getAnswerId());
     }
 
     @GetMapping("/users/")
-    public ArrayList<Topic> getAvailableTopics() {
-        org.springframework.security.core.userdetails.User securityUser =
+    public ArrayList<Topic> getAvailableTopics() { // Gets available topics for a user.
+        org.springframework.security.core.userdetails.User securityUser = // Getting authenticated user details.
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.findByEmail(securityUser.getUsername());
+        User user = userService.findByEmail(securityUser.getUsername()); // Getting user by using user details.
         return topicService.findAvailableTopicsForAUser(user);
     }
 
-    @GetMapping("/requests/")
+    @GetMapping("/requests/") // Gets topics that are requested and not approved yet.
     public ArrayList<Topic> getRequestedTopicsFromUsers() {
         return topicService.findRequestedTopics();
     }
 
-    @PatchMapping("/requests/")
+    @PatchMapping("/requests/") // Approves a requested topic.
     public void approveRequestedTopic(@RequestBody ApprovalDTO approvalDTO) {
         Topic approvedTopic = topicService.findById(approvalDTO.getApprovedTopicId());
 
-        if (approvedTopic.getIsApproved())
+        if (approvedTopic.getIsApproved()) // Checking if it is already approved.
             throw new RuntimeException("This topic is already approved.");
 
-        approvedTopic.setIsApproved(true);
+        approvedTopic.setIsApproved(true); // Approving a topic.
         topicService.save(approvedTopic);
     }
 

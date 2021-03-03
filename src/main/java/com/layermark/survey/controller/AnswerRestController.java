@@ -20,13 +20,13 @@ public class AnswerRestController {
         this.answerMapper = answerMapper;
     }
 
-    @GetMapping("/{answerId}")
+    @GetMapping("/{answerId}") // Gets answer by it's id.
     public AnswerResource getById(@PathVariable int answerId) {
         Answer answer = answerService.findById(answerId);
         return answerMapper.toResponse(answer);
     }
 
-    @PutMapping("/{answerId}")
+    @PutMapping("/{answerId}") // Updates answer.
     public AnswerResource updateAnswer(@PathVariable int answerId, @RequestBody AnswerDTO answerDTO) {
         Answer answer = answerService.findById(answerId);
         answer.setDescription(answerDTO.getDescription());
@@ -35,7 +35,7 @@ public class AnswerRestController {
         return answerMapper.toResponse(answer);
     }
 
-    @DeleteMapping("/{answerId}")
+    @DeleteMapping("/{answerId}") // Deletes answer.
     public void deleteAnswer(@PathVariable int answerId) {
         answerService.deleteById(answerId);
     }

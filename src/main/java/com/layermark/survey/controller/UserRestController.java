@@ -31,9 +31,13 @@ public class UserRestController {
     public UserResource createUser(@RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
 
+        // Setting user role as user if not specified, or not user or not admin.
         if (user.getRole() == null || !user.getRole().equals("USER") || !user.getRole().equals("ADMIN"))
             user.setRole("USER");
 
+        // Skipping verifying because an admin is creating user.
+
+        // Setting password by encoding it.
         user.setPassword(bcryptEncoder.encode(user.getPassword()));
         userService.save(user);
         return userMapper.toResource(user);

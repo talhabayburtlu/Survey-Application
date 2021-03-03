@@ -28,7 +28,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/")
-public class AuthController {
+public class AuthRestController {
 
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
@@ -40,14 +40,14 @@ public class AuthController {
     private final TokenService tokenService;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager,
-                          @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
-                          JwtUtil jwtTokenUtil,
-                          PasswordEncoder bcryptEncoder,
-                          UserService userService,
-                          UserMapper userMapper,
-                          EmailSender emailSender,
-                          TokenService tokenService) {
+    public AuthRestController(AuthenticationManager authenticationManager,
+                              @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
+                              JwtUtil jwtTokenUtil,
+                              PasswordEncoder bcryptEncoder,
+                              UserService userService,
+                              UserMapper userMapper,
+                              EmailSender emailSender,
+                              TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;

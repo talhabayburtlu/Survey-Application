@@ -24,28 +24,28 @@ public class TopicService {
         this.answerService = answerService;
     }
 
-    public Topic findById(int id) {
+    public Topic findById(int id) { // Finds topic by its id.
         Topic topic = topicRepository.findById(id).orElse(null);
         if (topic == null)
             throw new RuntimeException("Topic with id: " + id + " could not find.");
         return topic;
     }
 
-    public ArrayList<Topic> findAllTopicsApproved() {
+    public ArrayList<Topic> findAllTopicsApproved() { // Finds all topics that are approved.
         return new ArrayList<>(topicRepository.findByIsApprovedTrue());
     }
 
     public void save(Topic topic) {
         topicRepository.save(topic);
-        answerService.saveAll(topic.getAnswers());
+        answerService.saveAll(topic.getAnswers()); // Also saving topic's answer'.
     }
 
-    public void deleteById(int id) {
+    public void deleteById(int id) { // Deletes it by it's id.
         topicRepository.deleteById(id);
     }
 
     public ArrayList<ResultResource> findResults() { // Finds results of all topics.
-        ArrayList<Topic> topics = findAllTopicsApproved();
+        ArrayList<Topic> topics = findAllTopicsApproved(); // Getting all topics.
         ArrayList<ResultResource> resultResources = new ArrayList<>();
 
         for (Topic topic : topics) { // Creating result resources by iteration over topics.
@@ -62,11 +62,11 @@ public class TopicService {
 
     public ArrayList<Topic> findAvailableTopicsForAUser(User user) { // Finds all unanswered topics for a particular user.
         ArrayList<Topic> allTopics = findAllTopicsApproved();
-        ArrayList<Topic> answeredTopics = user.getAnswers()
+        ArrayList<Topic> answeredTopics = user.getAnswers() // Getting answered topics.
                 .stream()
                 .map(Answer::getTopic).collect(Collectors.toCollection(ArrayList::new));
 
-
+        // Filtering all topics by looking if a topic is listed in answered topics list.
         ArrayList<Topic> topicsAvailable = allTopics
                 .stream()
                 .filter(topic -> !answeredTopics.contains(topic)).collect(Collectors.toCollection(ArrayList::new));
@@ -74,7 +74,7 @@ public class TopicService {
         return topicsAvailable;
     }
 
-    public ArrayList<Topic> findRequestedTopics() {
+    public ArrayList<Topic> findRequestedTopics() { // Finds requested topics by searching approved property as false.
         return new ArrayList<>(topicRepository.findByIsApprovedFalse());
     }
 
