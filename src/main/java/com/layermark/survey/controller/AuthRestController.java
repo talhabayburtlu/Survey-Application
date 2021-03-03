@@ -1,6 +1,6 @@
 package com.layermark.survey.controller;
 
-import com.layermark.survey.config.JwtUtil;
+import com.layermark.survey.config.security.JwtUtil;
 import com.layermark.survey.entity.Token;
 import com.layermark.survey.entity.User;
 import com.layermark.survey.lib.dto.*;
@@ -10,6 +10,8 @@ import com.layermark.survey.mapper.UserMapper;
 import com.layermark.survey.service.TokenService;
 import com.layermark.survey.service.UserService;
 import com.layermark.survey.utils.EmailSender;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -58,6 +60,11 @@ public class AuthRestController {
         this.tokenService = tokenService;
     }
 
+    @Operation(
+            summary = "Logins an unauthenticated user.",
+            description = "Logins an unauthenticated user by returning a jwt created with secret. This jwt token must be " +
+                    "added to headers like 'Bearer jwtToken' in order to authenticate the user for necessary endpoints."
+    )
     @PostMapping("/auth/login")
     public AuthResource login(@RequestBody AuthDTO authDTO) throws Exception {
 
@@ -75,6 +82,12 @@ public class AuthRestController {
         return new AuthResource(jwt);
     }
 
+    @Operation(
+            summary = "Registers a new user.",
+            description = "Registers a new user and sends an email to corresponding mail to verify user. The user is not " +
+                    "able to do anything in API because user needs to verify himself/herself by sending received token to " +
+                    "/auth/verify endpoint."
+    )
     @PostMapping("/auth/register")
     public UserResource registerUser(@RequestBody UserDTO userDTO) throws MessagingException {
         User user = userMapper.toEntity(userDTO);
@@ -98,6 +111,12 @@ public class AuthRestController {
         return userMapper.toResource(user);
     }
 
+    @Operation(
+            summary = "Sends an email with a token to user's email.",
+            description = "Sends an email with a token to user's email for renewing password purpose. Email should given " +
+                    "as query param 'email'. Received token must send to /auth/forgot_password with POST method. The token " +
+                    " expires in 60 minutes."
+    )
     // Unauthenticated password renewal request.
     @GetMapping("/auth/forgot_password")
     public void forgetPasswordSendToken(@Email() @RequestParam String email) {
@@ -126,6 +145,11 @@ public class AuthRestController {
         }
     }
 
+    @Operation(
+            summary = "Renews user's password with received token.",
+            description = "Renews user's password if received token matches with sent token. API might throw an error if" +
+                    " giving token is not matched or it is expired."
+    )
     // Unauthenticated password renewal with received token.
     @PostMapping("/auth/forgot_password")
     public void forgotPasswordRenewal(@RequestBody ForgetPasswordRenewalDTO forgetPasswordRenewalDTO) {
@@ -143,6 +167,11 @@ public class AuthRestController {
         userService.save(user);
     }
 
+    @Operation(
+            summary = "Changes password of authenticated user.",
+            description = "Renews password of authenticated user without a mail step because of authentication.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     // Authenticated password renewal.
     @PostMapping("/auth/change_password")
     public void changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
@@ -155,7 +184,11 @@ public class AuthRestController {
         userService.save(user);
     }
 
-
+    @Operation(
+            summary = "Verifies an unverified account.",
+            description = "Verifies an unverified account by receiving a token which is earlier sent with mail. API might " +
+                    "throw error if tokens does not match."
+    )
     @PostMapping("/auth/verify")
     public void verifyAccount(@RequestBody VerifyAccountDTO verifyAccountDTO) {
         User user = userService.findByEmail(verifyAccountDTO.getEmail()); // Finding user with email.

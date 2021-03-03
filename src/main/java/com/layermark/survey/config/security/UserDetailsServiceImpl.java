@@ -1,4 +1,4 @@
-package com.layermark.survey.config;
+package com.layermark.survey.config.security;
 
 import com.layermark.survey.entity.User;
 import com.layermark.survey.service.UserService;

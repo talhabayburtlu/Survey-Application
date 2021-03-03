@@ -1,4 +1,4 @@
-package com.layermark.survey.config;
+package com.layermark.survey.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

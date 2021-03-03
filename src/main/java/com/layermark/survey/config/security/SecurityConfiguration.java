@@ -1,4 +1,4 @@
-package com.layermark.survey.config;
+package com.layermark.survey.config.security;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +41,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .cors().and().csrf().disable()
                 .authorizeRequests().antMatchers(
+                "/api-docs/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
                 "/auth/login/**",
                 "/auth/register/**",
                 "/auth/forgot_password/**",

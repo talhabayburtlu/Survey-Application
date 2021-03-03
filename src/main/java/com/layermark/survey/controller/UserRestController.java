@@ -5,6 +5,8 @@ import com.layermark.survey.lib.dto.UserDTO;
 import com.layermark.survey.lib.resource.UserResource;
 import com.layermark.survey.mapper.UserMapper;
 import com.layermark.survey.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +29,11 @@ public class UserRestController {
         this.bcryptEncoder = bcryptEncoder;
     }
 
+    @Operation(
+            summary = "Creates a user.",
+            description = "Creates a user without verifying process because the creator is an admin.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @PostMapping("/")
     public UserResource createUser(@RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
