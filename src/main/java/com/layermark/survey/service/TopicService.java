@@ -6,10 +6,12 @@ import com.layermark.survey.entity.Topic;
 import com.layermark.survey.entity.User;
 import com.layermark.survey.lib.resource.ResponseResource;
 import com.layermark.survey.lib.resource.ResultResource;
+import com.layermark.survey.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +46,7 @@ public class TopicService {
         topicRepository.deleteById(id);
     }
 
-    public ArrayList<ResultResource> findResults() { // Finds results of all topics.
+    public ArrayList<ResultResource> findResults(int page) { // Finds results of all topics.
         ArrayList<Topic> topics = findAllTopicsApproved(); // Getting all topics.
         ArrayList<ResultResource> resultResources = new ArrayList<>();
 
@@ -57,10 +59,14 @@ public class TopicService {
             resultResources.add(resultResource);
         }
 
-        return resultResources;
+        page = Math.max(page, 1); // Making page 1 if it is lower than 1.
+        // Computing start and end index of page.
+        int startIndex = Math.min((page - 1) * Constants.PAGE_SIZE, resultResources.size());
+        int endIndex = Math.min(page * Constants.PAGE_SIZE, resultResources.size());
+        return new ArrayList<>(resultResources.subList(startIndex, endIndex));
     }
 
-    public ArrayList<Topic> findAvailableTopicsForAUser(User user) { // Finds all unanswered topics for a particular user.
+    public ArrayList<Topic> findAvailableTopicsForAUser(User user, int page) { // Finds all unanswered topics for a particular user.
         ArrayList<Topic> allTopics = findAllTopicsApproved();
         ArrayList<Topic> answeredTopics = user.getAnswers() // Getting answered topics.
                 .stream()
@@ -71,11 +77,22 @@ public class TopicService {
                 .stream()
                 .filter(topic -> !answeredTopics.contains(topic)).collect(Collectors.toCollection(ArrayList::new));
 
-        return topicsAvailable;
+        page = Math.max(page, 1); // Making page 1 if it is lower than 1.
+        // Computing start and end index of page.
+        int startIndex = Math.min((page - 1) * Constants.PAGE_SIZE, topicsAvailable.size());
+        int endIndex = Math.min(page * Constants.PAGE_SIZE, topicsAvailable.size());
+
+        return new ArrayList<>(topicsAvailable.subList(startIndex, endIndex));
     }
 
-    public ArrayList<Topic> findRequestedTopics() { // Finds requested topics by searching approved property as false.
-        return new ArrayList<>(topicRepository.findByIsApprovedFalse());
+    public ArrayList<Topic> findRequestedTopics(int page) { // Finds requested topics by searching approved property as false.
+        List<Topic> requestedTopics = topicRepository.findByIsApprovedFalse();
+
+        page = Math.max(page, 1); // Making page 1 if it is lower than 1.
+        // Computing start and end index of page.
+        int startIndex = Math.min((page - 1) * Constants.PAGE_SIZE, requestedTopics.size());
+        int endIndex = Math.min(page * Constants.PAGE_SIZE, requestedTopics.size());
+        return new ArrayList<>(requestedTopics.subList(startIndex, endIndex));
     }
 
 

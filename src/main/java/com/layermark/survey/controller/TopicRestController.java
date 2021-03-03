@@ -40,7 +40,7 @@ public class TopicRestController {
     }
 
     @PostMapping("/") // Creates/Requests topic
-    public void createTopic(@RequestBody TopicDTO topicDTO) {
+    public Topic createTopic(@RequestBody TopicDTO topicDTO) {
         Topic topic = topicMapper.toEntity(topicDTO);
         topic.setIsApproved(false);
 
@@ -52,14 +52,16 @@ public class TopicRestController {
             topic.setIsApproved(true); // Not approving if it is created by a user.
 
         this.topicService.save(topic);
+        return topic;
     }
 
     @PutMapping("/{topicId}") // Updates a topic.
-    public void updateTopic(@PathVariable int topicId, @RequestBody TopicDTO topicDTO) {
+    public Topic updateTopic(@PathVariable int topicId, @RequestBody TopicDTO topicDTO) {
         Topic topic = topicMapper.toEntity(topicDTO);
         topic.setIsApproved(true);
         topic.setId(topicId);
         this.topicService.save(topic);
+        return topic;
     }
 
     @DeleteMapping("/{topicId}") // Deletes a topic.
@@ -68,8 +70,8 @@ public class TopicRestController {
     }
 
     @GetMapping("/results") // Gets results of approved topics.
-    public ArrayList<ResultResource> getResults() {
-        return topicService.findResults();
+    public ArrayList<ResultResource> getResults(@RequestParam(defaultValue = "1") int page) {
+        return topicService.findResults(page);
     }
 
     @PostMapping("/users/")
@@ -81,16 +83,16 @@ public class TopicRestController {
     }
 
     @GetMapping("/users/")
-    public ArrayList<Topic> getAvailableTopics() { // Gets available topics for a user.
+    public ArrayList<Topic> getAvailableTopics(@RequestParam(defaultValue = "1") int page) { // Gets available topics for a user.
         org.springframework.security.core.userdetails.User securityUser = // Getting authenticated user details.
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findByEmail(securityUser.getUsername()); // Getting user by using user details.
-        return topicService.findAvailableTopicsForAUser(user);
+        return topicService.findAvailableTopicsForAUser(user, page);
     }
 
     @GetMapping("/requests/") // Gets topics that are requested and not approved yet.
-    public ArrayList<Topic> getRequestedTopicsFromUsers() {
-        return topicService.findRequestedTopics();
+    public ArrayList<Topic> getRequestedTopicsFromUsers(@RequestParam(defaultValue = "1") int page) {
+        return topicService.findRequestedTopics(page);
     }
 
     @PatchMapping("/requests/") // Approves a requested topic.
