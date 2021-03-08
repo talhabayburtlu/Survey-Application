@@ -46,9 +46,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/swagger-ui/**",
                 "/auth/login/**",
                 "/auth/register/**",
-                "/auth/forgot_password/**",
+                "/auth/forgot_password",
                 "/auth/verify/**").permitAll()
                 .antMatchers(
+                        "/auth",
                         "/auth/change_password",
                         "/topics/results/**",
                         "/topics/users/**",
@@ -61,7 +62,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() { // Enables cors.
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("*"));

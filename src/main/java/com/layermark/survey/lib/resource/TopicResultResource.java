@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResultResource {
-    private String question;
-    private ArrayList<ResponseResource> responses;
+public class TopicResultResource {
+    private ArrayList<ResultResource> resultResources;
+    private int totalDocumentCount;
 }

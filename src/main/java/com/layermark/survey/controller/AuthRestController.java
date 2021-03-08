@@ -79,7 +79,9 @@ public class AuthRestController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authDTO.getEmail()); // Loading user details.
         final String jwt = jwtTokenUtil.generateToken(userDetails); // Generating jwt token in order to send it back.
 
-        return new AuthResource(jwt);
+        User user = userService.findByEmail(authDTO.getEmail());
+
+        return new AuthResource(jwt, user.getRole());
     }
 
     @Operation(
@@ -98,7 +100,8 @@ public class AuthRestController {
 
         String uuid = UUID.randomUUID().toString(); // Creating a random token.
         emailSender.sendMail(user.getEmail(), "Survey - Verify Account Token",
-                "Verify account token : " + uuid);
+                "Verify account token : " + uuid + ". " + "Verify link " +
+                        "http://localhost:3000/verify?email=" + user.getEmail() + "&token=" + uuid);
 
         Timestamp tokenEndDate = new Timestamp(System.currentTimeMillis());
         Token verifyToken = new Token(0, uuid, tokenEndDate, user);
@@ -128,7 +131,8 @@ public class AuthRestController {
 
                 // Sending email to user with created token information.
                 emailSender.sendMail(email, "Survey - Forget Password Token",
-                        "Forget password token : " + uuid);
+                        "Forget password token : " + uuid + ". " +
+                                "The link is http://localhost:3000/change_password?token=" + uuid);
 
                 if (user.getForgetPasswordToken() != null) // Clear previous token if not processed.
                     tokenService.deleteById(user.getForgetPasswordToken().getId());
@@ -138,6 +142,9 @@ public class AuthRestController {
 
                 Token token = new Token(0, uuid, tokenEndDate, user);
                 user.setForgetPasswordToken(token); // Wiring up the token and user.
+
+                // THERE IS A MAJOR BUG ABOUT SAVE PROCESS IN SPRING
+                // https://stackoverflow.com/questions/7986970/error-detached-entity-passed-to-persist-try-to-persist-complex-data-play-fra
                 tokenService.save(token);
                 userService.save(user);
             } catch (MessagingException me) {
@@ -202,6 +209,4 @@ public class AuthRestController {
         user.setRole("USER"); // Verifying user.
         userService.save(user);
     }
-
-
 }

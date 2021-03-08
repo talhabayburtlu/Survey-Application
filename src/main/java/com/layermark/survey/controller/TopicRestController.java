@@ -1,15 +1,18 @@
 package com.layermark.survey.controller;
 
+import com.layermark.survey.entity.Answer;
 import com.layermark.survey.entity.Topic;
 import com.layermark.survey.entity.User;
 import com.layermark.survey.lib.dto.ApprovalDTO;
 import com.layermark.survey.lib.dto.SubmissionDTO;
 import com.layermark.survey.lib.dto.TopicDTO;
-import com.layermark.survey.lib.resource.ResultResource;
+import com.layermark.survey.lib.resource.TopicResources;
+import com.layermark.survey.lib.resource.TopicResultResource;
 import com.layermark.survey.mapper.TopicMapper;
 import com.layermark.survey.service.AnswerService;
 import com.layermark.survey.service.TopicService;
 import com.layermark.survey.service.UserService;
+import com.layermark.survey.utils.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,16 +49,38 @@ public class TopicRestController {
         return topicService.findById(topicId);
     }
 
-    @PostMapping("/") // Creates/Requests topic
+    @Operation(
+            summary = "Gets all approved topics..",
+            description = "Gets all approved topics. By using pagination it is possible to get different results.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("") // Gets all topics.
+    public TopicResources getAllApprovedTopics(@RequestParam(defaultValue = "1") int page) {
+        ArrayList<Topic> approvedTopics = topicService.findAllTopicsApproved();
+
+        page = Math.max(page, 1); // Making page 1 if it is lower than 1.
+        // Computing start and end index of page.
+        int startIndex = Math.min((page - 1) * Constants.PAGE_SIZE, approvedTopics.size());
+        int endIndex = Math.min(page * Constants.PAGE_SIZE, approvedTopics.size());
+
+        ArrayList<Topic> trimmedApprovedTopics = new ArrayList<>(approvedTopics.subList(startIndex, endIndex));
+        return new TopicResources(trimmedApprovedTopics, approvedTopics.size());
+    }
+
     @Operation(
             summary = "Creates / Requests topic",
             description = "Creates a topic if authenticated user is an admin, requests a topic if authenticated user " +
-                    "is an user.",
+                    "is an user. Id field should be omitted beacause it will be automatically determined. " +
+                    "This id field is relevant about updating an answer.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
+    @PostMapping("/") // Creates/Requests topic
     public Topic createTopic(@RequestBody TopicDTO topicDTO) {
         Topic topic = topicMapper.toEntity(topicDTO);
         topic.setIsApproved(false);
+
+        if (topic.getAnswers() == null || topic.getAnswers().isEmpty()) // Checking if topic has at least one answer or not.
+            throw new RuntimeException("A topic must contain at least one answer.");
 
         org.springframework.security.core.userdetails.User securityUser =
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -76,7 +101,14 @@ public class TopicRestController {
     )
     @PutMapping("/{topicId}") // Updates a topic.
     public Topic updateTopic(@PathVariable int topicId, @RequestBody TopicDTO topicDTO) {
+        Topic oldTopic = topicService.findById(topicId);
         Topic topic = topicMapper.toEntity(topicDTO);
+
+        for (Answer answer : oldTopic.getAnswers()) {
+            if (!topic.getAnswers().contains(answer))
+                answerService.deleteById(answer.getId());
+        }
+
         topic.setIsApproved(true);
         topic.setId(topicId);
         this.topicService.save(topic);
@@ -96,7 +128,7 @@ public class TopicRestController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/results") // Gets results of approved topics.
-    public ArrayList<ResultResource> getResults(@RequestParam(defaultValue = "1") int page) {
+    public TopicResultResource getResults(@RequestParam(defaultValue = "1") int page) {
         return topicService.findResults(page);
     }
 
@@ -106,7 +138,7 @@ public class TopicRestController {
                     "Nothing is needed to be entered for topic information because an answer is directly connected to a topic.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @PostMapping("/users/")
+    @PostMapping("/users")
     public void submitAnswerToTopic(@RequestBody SubmissionDTO submissionDTO) { // Submits answer to a topic.
         org.springframework.security.core.userdetails.User securityUser = // Getting authenticated user details.
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -120,8 +152,8 @@ public class TopicRestController {
                     "By using pagination it is possible get other topics than default page's (1) topic.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @GetMapping("/users/")
-    public ArrayList<Topic> getAvailableTopics(@RequestParam(defaultValue = "1") int page) { // Gets available topics for a user.
+    @GetMapping("/users")
+    public TopicResources getAvailableTopics(@RequestParam(defaultValue = "1") int page) { // Gets available topics for a user.
         org.springframework.security.core.userdetails.User securityUser = // Getting authenticated user details.
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findByEmail(securityUser.getUsername()); // Getting user by using user details.
@@ -135,7 +167,7 @@ public class TopicRestController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/requests/") // Gets topics that are requested and not approved yet.
-    public ArrayList<Topic> getRequestedTopicsFromUsers(@RequestParam(defaultValue = "1") int page) {
+    public TopicResources getRequestedTopicsFromUsers(@RequestParam(defaultValue = "1") int page) {
         return topicService.findRequestedTopics(page);
     }
 

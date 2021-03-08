@@ -1,5 +1,6 @@
 package com.layermark.survey.lib.resource;
 
+import com.layermark.survey.entity.Topic;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResultResource {
-    private String question;
-    private ArrayList<ResponseResource> responses;
+public class TopicResources {
+    private ArrayList<Topic> topics;
+    private int totalDocumentCount;
 }

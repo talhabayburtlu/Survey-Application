@@ -18,11 +18,11 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    public String extractUsername(String token) {
+    public String extractUsername(String token) { // Extracts mail of user.
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(String token) {
+    public Date extractExpiration(String token) { // Extracts expiration date of token.
         return extractClaim(token, Claims::getExpiration);
     }
 
@@ -35,11 +35,11 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    private Boolean isTokenExpired(String token) { // Checks if token is expired or not.
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) { // Generates a new token for authenticated user.
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
     }
@@ -48,7 +48,7 @@ public class JwtUtil {
         return Jwts.builder().setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 5 * 60 * 60 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + 5 * 60 * 60 * 1000)) // Expiration set 5 hours.
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }

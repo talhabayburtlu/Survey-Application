@@ -30,6 +30,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             roles.add(new SimpleGrantedAuthority("ROLE_USER"));
         } else if (user.getRole().equals("USER"))
             roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+        else
+            throw new RuntimeException("Account needs to be verified.");
 
         return new org.springframework.security.core.userdetails.User(email, user.getPassword(), roles);
     }
