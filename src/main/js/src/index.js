@@ -10,7 +10,7 @@ import App from './App';
 import authReducer from "./store/reducers/auth"
 
 const rootReducer = combineReducers({
-    auth: authReducer
+  auth: authReducer
 });
 
 const store = createStore(rootReducer, compose(

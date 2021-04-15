@@ -29,25 +29,25 @@ const Results = (props) => {
             <Grid container direction="row" justify="center" alignItems="center">
                 <Typography variant="h4" style={{margin: "15px"}}>Survey Results</Typography>
                 {topics !== null && topics !== undefined ? topics.map(element => {
-                        return (
-                            <Grid item xs={12} key={element.question} style={{margin: "15px 100px"}}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography variant="h6" style={{
-                                            fontWeight: "600",
-                                            margin: "5px 0px"
-                                        }}>{element.question}</Typography>
-                                        <Divider style={{margin: "5px 0px"}}/>
-                                        {element.responses.map(response => {
-                                            return (
-                                                <Typography key={response["option-no"]} variant="body1"
-                                                            style={{margin: "5px 0px"}}>{response.option} :
-                                                    Chosed {response["response-count"]} times.</Typography>
-                                            )
-                                        })}
-                                    </CardContent>
-                                </Card>
-                            </Grid>)
+                    return (
+                        <Grid item xs={12} key={element.question} style={{margin: "15px 100px"}}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h6" style={{
+                                        fontWeight: "600",
+                                        margin: "5px 0px"
+                                    }}>{element.question}</Typography>
+                                    <Divider style={{margin: "5px 0px"}}/>
+                                    {element.responses.map(response => {
+                                        return (
+                                            <Typography key={response["option-no"]} variant="body1"
+                                                        style={{margin: "5px 0px"}}>{response.option} :
+                                                Chosed {response["response-count"]} times.</Typography>
+                                        )
+                                    })}
+                                </CardContent>
+                            </Card>
+                        </Grid>)
                     }
                 ) : null}
                 <Pagination page={page} count={pageCount} onChange={(e, v) => setPage(v)} color="primary"

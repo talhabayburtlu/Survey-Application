@@ -10,9 +10,9 @@ const Login = (props) => {
     const [forgotPasswordOn, setForgotPasswordOn] = useState(false);
 
     const submitForm = () => {
-        if (!forgotPasswordOn)
+        if (!forgotPasswordOn) {
             props.onLogin(email, password, props);
-        else
+        } else
             props.onSendForgetPasswordMail(email)
     }
 
@@ -20,7 +20,7 @@ const Login = (props) => {
         if (props.isAuthenticated) {
             props.history.push("/")
         }
-    }, []);
+    }, [props.isAuthenticated]);
 
     return (
         <React.Fragment>

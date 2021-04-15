@@ -50,38 +50,38 @@ const ApproveTopics = (props) => {
             <Grid container direction="row" justify="center" alignItems="center">
                 <Typography variant="h4" style={{margin: "15px"}}>Available Topics To Submit Answer</Typography>
                 {topics !== null && topics !== undefined ? topics.map(element => {
-                        return (
-                            <Grid item xs={12} key={element.id} style={{margin: "15px 100px"}}>
-                                <Card>
-                                    <CardContent>
-                                        <Grid container>
-                                            <Typography
-                                                variant="h6"
-                                                style={{fontWeight: "600", margin: "5px 0px"}}
-                                            >{element.description}</Typography>
-                                            <Button
-                                                variant="contained"
-                                                color="secondary"
-                                                onClick={() => approveTopic(element.id)}
-                                                style={{marginLeft: "auto"}}
-                                            >Approve</Button>
-                                            <Button
-                                                variant="contained"
-                                                color="secondary"
-                                                onClick={() => deleteTopic(element.id)}
-                                                style={{marginLeft: "10px"}}
-                                            >Delete</Button>
-                                        </Grid>
-                                        <Divider style={{margin: "5px 0px"}}/>
-                                        {element.answers.map(answer => {
-                                            return (
-                                                <Typography key={answer.id}
-                                                            style={{margin: "5px 0px"}}>{answer.description}</Typography>
-                                            )
-                                        })}
-                                    </CardContent>
-                                </Card>
-                            </Grid>)
+                    return (
+                        <Grid item xs={12} key={element.id} style={{margin: "15px 100px"}}>
+                            <Card>
+                                <CardContent>
+                                    <Grid container>
+                                        <Typography
+                                            variant="h6"
+                                            style={{fontWeight: "600", margin: "5px 0px"}}
+                                        >{element.description}</Typography>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => approveTopic(element.id)}
+                                            style={{marginLeft: "auto"}}
+                                        >Approve</Button>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => deleteTopic(element.id)}
+                                            style={{marginLeft: "10px"}}
+                                        >Delete</Button>
+                                    </Grid>
+                                    <Divider style={{margin: "5px 0px"}}/>
+                                    {element.answers.map(answer => {
+                                        return (
+                                            <Typography key={answer.id}
+                                                        style={{margin: "5px 0px"}}>{answer.description}</Typography>
+                                        )
+                                    })}
+                                </CardContent>
+                            </Card>
+                        </Grid>)
                     }
                 ) : null}
                 <Pagination page={page} count={pageCount} onChange={(e, v) => setPage(v)} color="primary"

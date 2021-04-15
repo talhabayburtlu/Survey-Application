@@ -35,7 +35,7 @@ const App = (props) => {
                 <Route exact path="/request" component={RequestTopic}/>
                 <Route exact path="/approve" component={ApproveTopics}/>
                 <Route exact path="/modify" component={ModifyTopics}/>
-                <Redirect to="/"/>
+                <Redirect to={props.isAuthenticated ? "/" : "/login"}/>
             </Switch>
         </div>
     );

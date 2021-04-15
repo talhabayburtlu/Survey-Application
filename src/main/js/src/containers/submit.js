@@ -39,24 +39,24 @@ const Submit = (props) => {
             <Grid container direction="row" justify="center" alignItems="center">
                 <Typography variant="h4" style={{margin: "15px"}}>Available Topics To Submit Answer</Typography>
                 {topics !== null && topics !== undefined ? topics.map(element => {
-                        return (
-                            <Grid item xs={12} key={element.id} style={{margin: "15px 100px"}}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography variant="h6" style={{
-                                            fontWeight: "600",
-                                            margin: "5px 0px"
-                                        }}>{element.description}</Typography>
-                                        <Divider style={{margin: "5px 0px"}}/>
-                                        {element.answers.map(answer => {
-                                            return (
-                                                <Button key={answer.id} fullWidth style={{margin: "5px 0px"}}
-                                                        onClick={() => submitAnswer(answer.id)}>{answer.description}</Button>
-                                            )
-                                        })}
-                                    </CardContent>
-                                </Card>
-                            </Grid>)
+                    return (
+                        <Grid item xs={12} key={element.id} style={{margin: "15px 100px"}}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h6" style={{
+                                        fontWeight: "600",
+                                        margin: "5px 0px"
+                                    }}>{element.description}</Typography>
+                                    <Divider style={{margin: "5px 0px"}}/>
+                                    {element.answers.map(answer => {
+                                        return (
+                                            <Button key={answer.id} fullWidth style={{margin: "5px 0px"}}
+                                                    onClick={() => submitAnswer(answer.id)}>{answer.description}</Button>
+                                        )
+                                    })}
+                                </CardContent>
+                            </Card>
+                        </Grid>)
                     }
                 ) : null}
                 <Pagination page={page} count={pageCount} onChange={(e, v) => setPage(v)} color="primary"

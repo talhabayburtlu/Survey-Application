@@ -10,7 +10,8 @@ export const loginStart = () => {
     }
 }
 
-export const loginSuccess = (token, role) => {
+export const loginSuccess = (token, role, props) => {
+    props.history.push("/")
     return {
         type: actionTypes.LOGIN_SUCCESS,
         token: token,
@@ -107,8 +108,7 @@ export const login = (email, password, props) => {
         axios({method: "post", url: "/auth/login/", data: {email, password}})
             .then((response) => {
                 localStorage.setItem("token", response.data.jwt);
-                props.history.push("/")
-                dispatch(loginSuccess(response.data.jwt, response.data.role))
+                dispatch(loginSuccess(response.data.jwt, response.data.role, props))
             })
             .catch((e) => {
                 dispatch(loginFail("Email or password is not correct."))
